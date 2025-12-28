@@ -50,21 +50,30 @@ into vector representations for semantic similarity search.
    - Results are ranked by similarity score
 
 ---
+## Key Takeaways
+
+- Vector search focuses on **semantic meaning**, not exact word matching  
+  (e.g., "happy", "enjoyed", and "satisfied" are understood as similar ideas)
+
+- Similarity is measured geometrically:
+  - Higher similarity score → closer meaning to the query
+  - Lower similarity score → less relevant meaning
+
+- Good vector search results depend on:
+  - Well-designed and clearly differentiated data
+  - Clear and specific natural language queries
+
+- Vector search is a core building block of modern systems such as:
+  - Semantic search
+  - Retrieval-Augmented Generation (RAG)
+---
 
 ## Example Query
 
 ```text
 Which milk tea experience made me feel the happiest?
 
-## Example Output
+Example Output
 - I drank a warm brown sugar milk tea and felt relaxed, happy, and satisfied
 - The matcha milk tea was perfectly balanced, not too sweet, and I really enjoyed it
 - The fruit milk tea was refreshing and made my afternoon much better
-
-## Key Takeaways
-- Vector search focuses on semantic meaning, not exact word matching
-   Good results depend on:
-   Well-designed data
-
-- Clear and specific natural language queries
-- Vector search is a core building block of modern systems such as semantic search and RA
