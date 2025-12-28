@@ -1,6 +1,6 @@
 # 90 Days to Rebuild: From Laid Off to a Scarce AI Backend Engineer
 
-**Day 1 — December 26, 2025 (the day after Christmas)**
+**Day 0 — December 26, 2025 (the day after Christmas)**
 
 This repository starts **after Christmas 2025**.  
 No holidays. No excuses. No private drafts.
@@ -66,11 +66,11 @@ If a day exists, it has a commit.
 
 ## 🗺️ High-Level Roadmap
 
-### Phase 1 — Foundations (Days 1–7)
+### Phase 1 — Foundations (Days 0–7)
 - Environment setup (Oracle 23ai, backend framework, tooling)
 - Minimal backend + database integration
 - First end-to-end working service
-- Clear documentation from Day 1
+- Clear documentation from Day 0
 
 ### Phase 2 — Real Projects (Days 8–45)
 - 2–3 portfolio-grade backend systems
@@ -98,6 +98,7 @@ If a day exists, it has a commit.
 ## 📆 Daily Log
 
 - **Day 0 — 2025-12-26:** Repository initialized. Manifesto published. Roadmap defined.
+- **Day 1 — 2025-12-27:** Core concept of embeddings-based vector search validated through a working end-to-end demo.
 
 Future days will extend this log — publicly.
 
