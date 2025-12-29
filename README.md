@@ -99,6 +99,8 @@ If a day exists, it has a commit.
 
 - **Day 0 — 2025-12-26:** Repository initialized. Manifesto published. Roadmap defined.
 - **Day 1 — 2025-12-27:** Core concept of embeddings-based vector search validated through a working end-to-end demo.
+- **Day 2 – 2025-12-26**: Implement pure local vector semantic search: OpenAI text-embedding-3-small + cosine similarity calculation, supporting natural language queries of logs/documents stored in memory.
+- **Day 3 – 2025-12-27**: Oracle 26ai Cloud Vector Semantic Search. Migrate the local version completely to Oracle Autonomous Database 26ai (Always Free), using the native VECTOR type for storing embeddings and VECTOR_DISTANCE for cloud-based similarity calculation, achieving persistence and an enterprise-grade semantic search prototype.
 
 Future days will extend this log — publicly.
 
