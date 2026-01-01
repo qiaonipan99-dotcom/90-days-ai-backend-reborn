@@ -1,74 +1,209 @@
-# Oracle 26ai Cloud Vector Semantic Search Demo (RAG prototype)
+# Oracle 26ai Cloud Vector Semantic Search (RAG Prototype)
 
-**A reskilling project by a developer after layoff · Day 4 milestone** 
+> **A production-style semantic search and RAG system built on real HDFS logs — exploring both the capabilities and the limits of AI-assisted operational diagnosis.**
 
-An enterprise-grade semantic search service prototype built on Oracle Cloud Always Free Autonomous Database 26ai.
+---
 
-Core capability:  
-Query logs/documents using natural language; the system understands intent and returns the most relevant content from the cloud database.
+## 📌 Project Overview
 
-## Why this project?
-- Traditional keyword search (grep, ELK) can miss semantically similar content that uses different words.
-- Vector semantic search can truly "understand" query intent and significantly improve issue localization.
-- Real-world enterprise scenarios:
-  - Ops: diagnose k8s/Hadoop logs — ask "Why did the pod restart?" → instantly return relevant error logs
-  - User feedback analysis: ask "What are the most common complaints?" → return similar comments
-  - Security audits: quickly locate logs similar to known attack patterns
+This project is a **full-cycle Retrieval-Augmented Generation (RAG) prototype** that performs **semantic search over real HDFS production logs** using:
 
-## Tech stack
-- OpenAI `text-embedding-3-small` (produces 1536-dim vectors)
-- Oracle Autonomous Database 26ai (native VECTOR type + VECTOR_DISTANCE computation)
-- FastAPI (REST API + Swagger docs)
-- Simple frontend HTML/JS (framework-free, easy to understand)
+- OpenAI text embeddings  
+- Oracle Autonomous Database 26ai native vector search  
+- FastAPI backend  
+- Lightweight HTML / JavaScript frontend  
 
-## Quick start (local)
+Users can ask **natural language questions** such as:
 
-1. Clone the repo and install dependencies
-   ```bash
-   git clone https://github.com/qiaonipan99-dotcom/90-days-ai-backend-reborn.git
-   cd 04-oracle23ai-semantic-search-pro
-   pip install -r requirements.txt
-   ```
-2. Configure `.env` (copy `.env.example` and fill in your keys and Oracle info)
-3. Insert sample data
-   ```bash
-   python insert_logs.py
-   ```
-4. Start the service
-   ```bash
-   python -m uvicorn api:app --reload
-   ```
-5. Open http://127.0.0.1:8000 in your browser
-   → Use the polished frontend, enter a question, and search!
+- *“What caused the block to be missing?”*  
+- *“Why did the DataNode stop responding?”*
 
-## Screenshots
-![Project welcome page](screenshots/UI.png)
+The system retrieves the **most semantically relevant logs** and generates an **evidence-based AI summary** grounded strictly in retrieved data.
 
-![Example search results](screenshots/prompts_and_results.png)
+This project was built as part of my **reskilling journey after a layoff**, with a strong emphasis on **realistic enterprise constraints rather than toy AI demos**.
 
-## API (advanced)
-- Swagger interactive docs: http://127.0.0.1:8000/docs
-- Example curl:
-   ```bash
-   curl -X POST http://127.0.0.1:8000/search \
-      -H "Content-Type: application/json" \
-      -d '{"query": "Which milk tea experience made me feel the happiest?", "top_k": 3}'
-   ```
+---
 
-## Current data and future roadmap
-- The demo contains 19 sample entries (Qiaoni qualities + milk tea/coffee experiences) to quickly illustrate semantic search.
-- Next steps:
-   - Ingest large-scale real system logs (Loghub/HDFS/k8s)
-   - Support millions of vectors with indexing and acceleration
-   - Add hybrid search (vector + keyword)
+## 📌 Motivation
 
-## Afterword
-After being laid off, I found that AI + vector databases are becoming essential skills for backend engineers.
+Most AI demos assume:
+- Clean datasets  
+- Explicit labels  
+- Clear cause–effect relationships  
 
-Instead of worrying, take action. This project is a small milestone in my reskilling journey — an end-to-end enterprise RAG prototype built from scratch.
+**Production logs are the opposite.**
 
-I hope it helps others who are transitioning as well. If you find it useful, please Star ⭐ the repo or open an Issue/PR to help improve the project.
+They are:
+- Noisy  
+- State-heavy  
+- Often missing explicit causal explanations  
 
-— A developer reskilling after a layoff (Qiaoni)
+This project intentionally uses **1000+ real HDFS production logs** to explore a critical question:
 
-2025-12-30
+> **What can semantic search and RAG realistically do — and where do they break — in real operational environments?**
+
+---
+
+## 📌 System Architecture
+
+**Query Flow**
+
+1. User submits a natural language query  
+2. Query is converted into an embedding via OpenAI  
+3. Oracle 26ai performs vector similarity search over stored log embeddings  
+4. Top-K relevant logs are retrieved with similarity scores  
+5. An LLM generates a concise summary based strictly on retrieved evidence  
+6. Frontend renders:
+   - AI summary  
+   - Ranked log evidence  
+   - Similarity scores  
+```
+User Query
+↓
+OpenAI Embedding
+↓
+Oracle 26ai Vector Search
+↓
+Top-K Relevant Logs
+↓
+LLM Evidence-Based Summary
+↓
+Frontend Rendering
+```
+
+---
+
+## 📌 What Works Well
+
+### 1. End-to-End RAG Pipeline (Production-Oriented)
+
+- No notebooks  
+- No mock data  
+- No in-memory toy vector stores  
+
+This is a **real service-style system** with:
+- Persistent vector storage  
+- Clear API contracts  
+- Frontend–backend integration  
+
+**Qiaoni note:**  
+> “I prioritized system completeness and production realism over isolated model experiments.”
+
+---
+
+### 2. Honest AI Behavior (No Hallucination)
+
+When the retrieved logs **do not contain enough causal evidence**, the AI:
+- Explicitly states uncertainty  
+- Avoids inventing root causes  
+- References only retrieved logs  
+
+**Qiaoni note:**  
+> “I treated missing information as a first-class signal instead of hiding it with hallucination.”
+
+---
+
+### 3. Semantic Retrieval Over Noisy Logs
+
+Despite noisy, unlabeled data, the system consistently clusters:
+- HDFS block lifecycle events  
+- DataNode-related behavior  
+- Storage and network-adjacent signals  
+
+This validates the **embedding + vector search foundation**.
+
+---
+
+## 📌 Known Limitations (By Design)
+
+### 1. State ≠ Cause
+
+Most production logs describe **what happened**, not **why it happened**.
+
+As a result:
+- Queries asking *“why”* often retrieve state transitions (e.g. `addStoredBlock`)  
+- The system can summarize context but cannot always infer true root cause  
+
+This reflects **real observability constraints**, not a modeling bug.
+
+---
+
+### 2. Semantic Distribution Is Skewed
+
+- ~80% of logs represent normal INFO-level operations  
+- Failure and corruption signals are sparse  
+
+Pure semantic similarity retrieval tends to favor **frequent states over rare failures**.
+
+---
+
+## 📌 Key Insight
+
+> **Semantic search does not create causality — it amplifies whatever semantic signals already exist in the data.**
+
+This project demonstrates that improving AI-assisted diagnosis often requires:
+- Redesigning data semantics  
+- Enriching failure signals  
+- Explicitly modeling uncertainty  
+
+—not simply switching models or embeddings.
+
+**Qiaoni-ready phrasing:**  
+> “The biggest improvement opportunity wasn’t the model, but how failure semantics are represented in the data.”
+
+---
+
+## 📌 Planned V2: Failure-Aware & Causal-Oriented Retrieval
+
+The next iteration focuses on bridging the gap between **state retrieval** and **causal diagnosis**.
+
+### V2 Goals
+
+#### 1. Failure-Aware Semantic Enrichment
+- Extract and up-weight logs related to:
+  - Missing blocks  
+  - Corruption  
+  - Under-replication  
+  - Node failures  
+- Introduce a curated **failure-centric sub-corpus**
+
+#### 2. Two-Stage Retrieval
+- Stage 1: Vector similarity recall  
+- Stage 2: Failure / causality-aware reranking (lightweight rules or LLM-based)
+
+#### 3. Confidence & Coverage Signals
+- Explicitly indicate:
+  - Whether causal evidence exists  
+  - Whether the answer is speculative or evidence-backed  
+
+#### 4. Timeline Reconstruction (Optional)
+- Group logs by time to expose:
+  - Pre-failure signals  
+  - Cascading effects  
+
+**Qiaoni note:**  
+> “V2 shifts the problem from ‘better embeddings’ to ‘better semantic representation of failures.’”
+
+---
+
+## 📌 Tech Stack
+
+- **Backend:** FastAPI (Python)  
+- **Vector Database:** Oracle Autonomous Database 26ai  
+- **Embeddings & LLM:** OpenAI  
+- **Frontend:** Vanilla HTML / JavaScript  
+- **Data:** 1000+ real HDFS production logs  
+
+---
+
+## 📌 Final Note
+
+This project is intentionally **not a perfect AI diagnosis system**.
+
+It is a realistic exploration of:
+- What semantic search and RAG can do  
+- Where they fail  
+- Why those failures matter  
+
+> The most valuable outcome was not higher accuracy,  
+> but a clearer understanding of **where intelligence must be designed, not assumed**.
