@@ -36,10 +36,13 @@ dsn = f"{username}/{password}@(description=(retry_count=20)(retry_delay=3)" \
 # =========================
 # Oracle DB connection
 # =========================
+dsn = os.getenv("ORACLE_DSN")
+
+if not dsn:
+    raise ValueError("ORACLE_DSN not found!")
+
 connection = oracledb.connect(dsn=dsn)
 cursor = connection.cursor()
-
-print("Oracle connection successful (EZ Connect mode)")
 
 # =========================
 # FastAPI app
